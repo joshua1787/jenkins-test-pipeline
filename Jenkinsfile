@@ -1,11 +1,11 @@
 pipeline {
   agent {
     kubernetes {
-      label 'kaniko-agent'
+      inheritFrom 'kaniko-agent'
       defaultContainer 'kaniko'
-      yaml ''
     }
   }
+
   environment {
     AWS_REGION = 'us-east-1'
     ECR_REGISTRY = '913524928876.dkr.ecr.us-east-1.amazonaws.com'
