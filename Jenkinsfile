@@ -16,11 +16,7 @@ pipeline {
         stage('Build and Push Image with Kaniko') {
             steps {
                 script {
-                    kubernetesDeploy(
-                        configs: '', // no configs
-                        kubeconfigId: '', // no kubeconfig needed
-                        manifests: [
-"""
+                    writeFile file: 'kaniko-pod.yaml', text: """
 apiVersion: v1
 kind: Pod
 metadata:
@@ -38,20 +34,8 @@ spec:
     - "--destination=${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}"
     - "--insecure"
     - "--skip-tls-verify"
-    env:
-    - name: AWS_ACCESS_KEY_ID
-      valueFrom:
-        secretKeyRef:
-          name: aws-credentials
-          key: aws_access_key_id
-    - name: AWS_SECRET_ACCESS_KEY
-      valueFrom:
-        secretKeyRef:
-          name: aws-credentials
-          key: aws_secret_access_key
 """
-                        ]
-                    )
+                    sh 'kubectl apply -f kaniko-pod.yaml -n jenkins'
                 }
             }
         }
